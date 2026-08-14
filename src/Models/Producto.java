@@ -5,6 +5,7 @@ public class Producto {
      protected String nombre ;
      protected double precio;
      protected int stock;
+     private boolean activo;
 
     public Producto(String nombre, double precio, int stock) {
         this.nombre = nombre;
@@ -13,6 +14,14 @@ public class Producto {
     }
 
     public Producto() {
+    }
+
+     public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public int getId_producto() {
