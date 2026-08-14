@@ -13,37 +13,38 @@ import java.util.ArrayList;
 public class DaoProducto implements IdaoProductos {
 
 
-    @Override
+   @Override
     public boolean guardarProducto(Producto producto) {
-        String sql = "INSERT INTO productos(nombre,precio,stock) VALUES (?,?,?)";
+        String sql = "INSERT INTO productos(nombre, precio, stock, activo) VALUES (?, ?, ?, true)";
 
-        try (Connection con = Conecction.getConexion ();
+        try (Connection con = Conecction.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, producto.getNombre());
             ps.setDouble(2, producto.getPrecio());
             ps.setInt(3, producto.getStock());
-            return ps.executeUpdate() >0;
+            return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    @Override
+  @Override
     public ArrayList<Producto> listar() {
         ArrayList<Producto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM productos ORDER BY id_producto";
-        try (Connection con =Conecction.getConexion ();
+        // FILTRO: Traer únicamente productos activos
+        String sql = "SELECT * FROM productos WHERE activo = true ORDER BY id_producto";
+        try (Connection con = Conecction.getConexion();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Producto producto = new Producto();
-
-                producto.setId_producto(rs.getInt("Id_producto"));
-                producto.setNombre(rs.getString("Nombre"));
-                producto.setPrecio(rs.getDouble("Precio"));
-                producto.setStock(rs.getInt("Stock"));
+                producto.setId_producto(rs.getInt("id_producto"));
+                producto.setNombre(rs.getString("nombre"));
+                producto.setPrecio(rs.getDouble("precio"));
+                producto.setStock(rs.getInt("stock"));
+                producto.setActivo(rs.getBoolean("activo"));
 
                 lista.add(producto);
             }
@@ -56,24 +57,24 @@ public class DaoProducto implements IdaoProductos {
     @Override
     public Producto buscar(int id_producto) {
         Producto producto = null;
-        String sql = "SELECT * FROM productos WHERE id_producto =?";
+        // Solo buscamos si está activo para evitar ventas de deshabilitados
+        String sql = "SELECT * FROM productos WHERE id_producto = ? AND activo = true";
 
         try (Connection con = Conecction.getConexion();
-        PreparedStatement ps = con.prepareStatement(sql)){
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1,id_producto);
-            try (ResultSet rs = ps.executeQuery()){
-                if (rs.next()){
-                 producto = new Producto();
-                 producto.setId_producto(rs.getInt("id_producto"));
-                 producto.setNombre(rs.getString("nombre"));
-                 producto.setPrecio(rs.getDouble("precio"));
-                 producto.setStock(rs.getInt("stock"));
-
-
+            ps.setInt(1, id_producto);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    producto = new Producto();
+                    producto.setId_producto(rs.getInt("id_producto"));
+                    producto.setNombre(rs.getString("nombre"));
+                    producto.setPrecio(rs.getDouble("precio"));
+                    producto.setStock(rs.getInt("stock"));
+                    producto.setActivo(rs.getBoolean("activo"));
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -99,18 +100,19 @@ public class DaoProducto implements IdaoProductos {
         return false;
     }
 
-    @Override
+  @Override
     public boolean eliminarProducto(int id) {
-            String sql = "DELETE FROM productos WHERE Id_producto = ?";
-            try (Connection con = Conecction.getConexion();
-                 PreparedStatement ps = con.prepareStatement(sql)) {
+        // AQUÍ ESTÁ EL BORRADO LÓGICO: En lugar de DELETE, hacemos UPDATE activo = false
+        String sql = "UPDATE productos SET activo = false WHERE id_producto = ?";
+        try (Connection con = Conecction.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-                ps.setInt(1, id);
-                return ps.executeUpdate() > 0;
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
 
-            } catch (Exception e) {
-                System.out.println("Error al eliminar producto: " + e.getMessage());
-            }
-            return false;
+        } catch (Exception e) {
+            System.out.println("Error al deshabilitar producto: " + e.getMessage());
+        }
+        return false;
     }
 }
