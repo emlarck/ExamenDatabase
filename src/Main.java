@@ -151,45 +151,40 @@ import java.util.Scanner;
                         }
 
                     break;
-                case 4:
-                    System.out.println("\n--- ELIMINAR PRODUCTO ---");
-                    ArrayList<Producto> listaEliminar = dao.listar();
-                    if (listaEliminar.isEmpty()) {
-                        System.out.println("No hay productosedi disponibles para eliminar.");
-                        break;
-                    } else{
-                        for (Producto p : listaEliminar) {
-                            System.out.println("ID: " + p.getId_producto() + " | Nombre: " + p.getNombre() + " | Stock: " + p.getStock());
-                        }
-                        System.out.println("\nIngrese el ID del producto que desea eliminar:");
-                        int idEliminar = Validacion.Scanner_enteros(scan, "");
-                        Producto prodExiste = dao.buscar(idEliminar);
+               case 4:
+    System.out.println("\n--- DESHABILITAR PRODUCTO ---");
+    ArrayList<Producto> listaEliminar = dao.listar();
+    if (listaEliminar.isEmpty()) {
+        System.out.println("No hay productos disponibles para deshabilitar.");
+        break;
+    } else {
+        for (Producto p : listaEliminar) {
+            System.out.println("ID: " + p.getId_producto() + " | Nombre: " + p.getNombre() + " | Stock: " + p.getStock());
+        }
+        System.out.println("\nIngrese el ID del producto que desea deshabilitar:");
+        int idEliminar = Validacion.Scanner_enteros(scan, "");
+        Producto prodExiste = dao.buscar(idEliminar);
 
-                        if (prodExiste ==null){
-                            System.out.println("El id ingresado no existe");
-                            break;
-                        }
-                        if (prodExiste != null) {
-                            System.out.println("¿Está seguro de eliminar '" + prodExiste.getNombre() + "'? (1: Sí / 2: No)");
-                            int confirma = Validacion.Scanner_enteros(scan, "");
-                            if (confirma == 1) {
-                                if (dao.eliminarProducto(idEliminar)) {
-                                    System.out.println("¡Producto eliminado con éxito!");
-                                    break;
-                                    } else {
-                                        System.out.println("No se pudo eliminar el producto");
-                                    }
-                                } if (confirma == 2) {
-                                    System.out.println("Operación cancelada.");
-                                    break;
-                                }else {
-                                    System.out.println("Opcion invalida");
-                                    break;
-                                }
-                            }
-                        
-                    }
-                    break;
+        if (prodExiste == null) {
+            System.out.println("El ID ingresado no existe o ya está deshabilitado.");
+            break;
+        }
+
+        System.out.println("¿Está seguro de deshabilitar '" + prodExiste.getNombre() + "'? (1: Sí / 2: No)");
+        int confirma = Validacion.Scanner_enteros(scan, "");
+        if (confirma == 1) {
+            if (dao.eliminarProducto(idEliminar)) {
+                System.out.println("¡Producto deshabilitado con éxito!");
+            } else {
+                System.out.println("No se pudo deshabilitar el producto.");
+            }
+        } else if (confirma == 2) {
+            System.out.println("Operación cancelada.");
+        } else {
+            System.out.println("Opción inválida.");
+        }
+    }
+    break;
                 case 5:
                     System.out.println("Saliendo del menu de porductos...");
                     salo = false;
