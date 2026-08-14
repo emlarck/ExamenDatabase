@@ -5,16 +5,29 @@ public class Producto {
      protected String nombre ;
      protected double precio;
      protected int stock;
+     private boolean activo;
+     
+     public Producto() {
+        this.activo = true;
+    }
 
-    public Producto(String nombre, double precio, int stock) {
+   public Producto(String nombre, double precio, int stock) {
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
+        this.activo = true;
     }
 
     public Producto() {
     }
 
+     public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
     public int getId_producto() {
         return id_producto;
     }
